@@ -1,7 +1,7 @@
-FROM nvidia/cuda:10.1-base-ubuntu18.04
+FROM nvidia/cuda:9.2-base-ubuntu18.04
 
 LABEL maintainer="BOINC" \
-      description="NVIDIA-savvy (CUDA & OpenCL) BOINC client."
+      description="A base container image for lightweight NVIDIA-savvy (CUDA & OpenCL) BOINC clients"
 
 # Global environment settings
 ENV BOINC_GUI_RPC_PASSWORD="123" \
@@ -14,17 +14,14 @@ COPY bin/ /usr/bin/
 # Configure
 WORKDIR /var/lib/boinc
 
-# BOINC RPC port
-EXPOSE 31416
-
 # Install
 RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PPA dependency
     software-properties-common && \
 # Install BOINC Client
-    add-apt-repository -y ppa:costamagnagianfranco/boinc && \
+    add-apt-repository -y universe && \
     apt-get update && apt-get install -y --no-install-recommends \
-    boinc-client && \
+    boinc-client boinc-manager && \
 # Install Nvidia OpenCL
     add-apt-repository -y ppa:graphics-drivers && \
     apt-get update && apt-get install -y --install-recommends \
@@ -34,4 +31,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
-CMD ["start-boinc.sh"]
+CMD ["/bin/bash"]
